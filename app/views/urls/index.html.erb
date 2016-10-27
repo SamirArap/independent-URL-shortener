@@ -1,0 +1,96 @@
+<div class="container">
+  <div class="jumbotron">
+    <div class="page-header">
+      <h1>Shorten and personalize</h1>
+      <h3>any link</h3>
+    </div>
+
+    <div class="row">
+      <%= form_for @url do |f| %>
+        <div class="col-lg-12">
+          <div class="input-group">
+            <%= f.text_field :original_url, class: "form-control", placeholder: "Please past your original URL here" %>
+            <span class="input-group-btn">
+              <%= f.submit "Shorten", class: "btn btn-warning" %>
+
+            <%= link_to "Reset", root_path, class: "btn btn-primary" %></span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+
+  <% flash.each do |key, value| %>
+      <div class="short_url_box">
+        <% if value!="Wrong URL!" %>
+        <div class="input-group">
+            <input type="text" class="form-control" id="url" value="<%= value %>">
+            <span class="input-group-btn">
+              <button class="btn btn-warning" type="button" id="copyButton">copy</button>
+            </span>
+          </div>
+          <% else %>
+              <input type="text" class="form-control" id="url" value="<%= value %>">
+          <% end %>
+        </div>
+      </div>
+  <% end %>
+
+  <script>
+    document.getElementById("copyButton").addEventListener("click", function() {
+      copyToClipboard(document.getElementById("url"));
+    });
+
+    function copyToClipboard(elem) {
+      // create hidden text element, if it doesn't already exist
+      var targetId = "_hiddenCopyText_";
+      var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+      var origSelectionStart, origSelectionEnd;
+      if (isInput) {
+        // can just use the original source element for the selection and copy
+        target = elem;
+        origSelectionStart = elem.selectionStart;
+        origSelectionEnd = elem.selectionEnd;
+      } else {
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+          var target = document.createElement("textarea");
+          target.style.position = "absolute";
+          target.style.left = "-9999px";
+          target.style.top = "0";
+          target.id = targetId;
+          document.body.appendChild(target);
+        }
+        target.textContent = elem.textContent;
+      }
+      // select the content
+      var currentFocus = document.activeElement;
+      target.focus();
+      target.setSelectionRange(0, target.value.length);
+
+      // copy the selection
+      var succeed;
+      try {
+        succeed = document.execCommand("copy");
+      } catch(e) {
+        succeed = false;
+      }
+      // restore original focus
+      if (currentFocus && typeof currentFocus.focus === "function") {
+        currentFocus.focus();
+      }
+
+      if (isInput) {
+        // restore prior selection
+        elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+      } else {
+        // clear temporary content
+        target.textContent = "";
+      }
+      return succeed;
+    }
+  </script>
+</div>
